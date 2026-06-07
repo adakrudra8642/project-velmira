@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": ".git"
+		}
+	],
+	"settings": {
+		"workbench.activityBar.location": "default",
+		"workbench.statusBar.visible": true,
+		"explorer.openEditors.visible": 1,
+		"workbench.list.smoothScrolling": true,
+		"editor.tokenColorCustomizations": {
+			"textMateRules": [
+				{
+					"scope": [
+						"comment"
+					],
+					"settings": {
+						"fontStyle": "italic",
+						"foreground": "#6A9955"
+					}
+				}
+			]
+		}
+	}
+}

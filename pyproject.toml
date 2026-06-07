@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "velmira"
+version = "1.0.0"
+description = "Velmira (VEL) — a local-first RAG assistant with per-entity memory"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Rudra Adak", email = "adakrudra8642@gmail.com" }
+]
+keywords = ["rag", "llm", "local-ai", "privacy", "lancedb", "llama-cpp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "llama-cpp-python>=0.3.16",
+    "lancedb>=0.27.1",
+    "docling>=2.73.0",
+    "python-dotenv>=1.1.0",
+]
+
+[project.urls]
+Repository = "https://github.com/adakrudra8642/project-velmira"
+# Bug Tracker = "https://github.com/adakrudra8642/project-velmira/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
