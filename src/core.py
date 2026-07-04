@@ -8,25 +8,37 @@ import config
 
 log = logging.getLogger(__name__)
 
+
 def init():
+    """Initialize VEL Kernel with models and database."""
     print("Initializing VEL Kernel...")
+
     # Load models
-    embed_model = Llama(model_path=config.EMBED_MODEL, **config.EMBED_CONFIG, embedding=True)
+    embed_model = Llama(
+        model_path=config.EMBED_MODEL, **config.EMBED_CONFIG, embedding=True
+    )
     main_model = Llama(model_path=config.MAIN_MODEL, **config.MAIN_CONFIG)
 
     # Get embedding dimension
     try:
-        dimension = len(embed_model.create_embedding("test")["data"][0]["embedding"])
+        embedding_response = embed_model.create_embedding("test")
+        dimension = len(embedding_response["data"][0]["embedding"])
     except Exception as e:
         log.critical("Embedding model failed: %s", e)
         raise RuntimeError("Could not get embedding dimension.") from e
 
     # Connect to LanceDB
     db = lancedb.connect(config.DB_PATH)
-    registry = db.create_table("registry", data=[{"eid": "init", "attrs": "{}"}], exist_ok=True)
-    archive = db.create_table("archive",
-        data=[{"id": "init", "eid": "sys", "text": "Init", "vector": [0.0]*dimension}],
-        exist_ok=True)
+    registry = db.create_table(
+        "registry", data=[{"eid": "init", "attrs": "{}"}], exist_ok=True
+    )
+    archive = db.create_table(
+        "archive",
+        data=[
+            {"id": "init", "eid": "sys", "text": "Init", "vector": [0.0] * dimension}
+        ],
+        exist_ok=True,
+    )
 
     # Try FTS index (optional)
     try:
@@ -37,14 +49,19 @@ def init():
 
     return embed_model, main_model, registry, archive
 
+
 def embed(text, model):
+    """Create embedding for text using the provided model."""
     try:
-        return model.create_embedding(text)["data"][0]["embedding"]
+        embedding_response = model.create_embedding(text)
+        return embedding_response["data"][0]["embedding"]
     except Exception as e:
         log.error("Embedding failed for '%s...': %s", text[:50], e)
         raise
 
+
 def update_registry(table, eid, new_attrs):
+    """Update registry table with new attributes for entity."""
     if not isinstance(new_attrs, dict) or not new_attrs:
         return
     try:

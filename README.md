@@ -1,40 +1,36 @@
 # VELMIRA (VEL)
 
-> A local-first RAG assistant. Your documents stay on your machine. Always.
-
-Vel reads your documents, indexes them into a local vector database, and answers questions about their content — no cloud, no API keys, no data leaving your machine. Built with privacy and GDPR compliance as first-class constraints, not afterthoughts.
+> A privacy-first local RAG assistant that keeps your data on your machine, always.
 
 ---
 
 ## What It Does
 
-Feed VEL a document. Ask it anything about that document. It retrieves the relevant chunks, injects them as context, and generates an answer using a fully local LLM. All of it runs on CPU — no GPU required.
+Vel reads your documents, indexes them locally, and answers questions from their content — no cloud, no API keys, no data leaving your machine. Privacy and GDPR compliance are built in.
 
-Multi-entity support means you can maintain separate memory spaces for different people or projects. A hospital could track patient records. A school could separate student profiles. Switch context with a single command.
+Give VEL a document and ask anything. It finds relevant chunks, uses them as context, and generates answers with a local LLM on CPU only.
+
+Multi-entity support lets you keep separate memory spaces for different people or projects. Switch context with a single command.
+
+Better model, better responses.
 
 ---
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/adakrudra8642/project-velmira.git
-cd project-velmira
-
-python -m venv venv
-venv\Scripts\activate        # Windows
-# source venv/bin/activate   # Linux/macOS
-
-pip install -r requirements.txt
+docker build -t velmira .
+docker run --rm -it -v "%CD%/models:/app/models" -v "%CD%/data:/app/data" velmira
 ```
 
 Download two GGUF models and place them in the `models/` folder (create it if it doesn't exist):
 
-| Role | Recommended Model |
-|------|-------------------|
-| Main LLM | `Qwen3-4B-*-Q4_K_M.gguf` |
-| Embeddings | `Qwen3-Embedding-0.6B-q8_0.gguf` |
+| Role | Type | Size | Quantization |
+|------|------------|------|--------------|
+| Main LLM | `gguf` | `4B` | `Q4_K_M` |
+| Embeddings | `gguf` | `0.6B` | `q8_0` |
 
-Both available on [Hugging Face](https://huggingface.co). Update paths in `src/config.py` if you use different models.
+Both available on [Hugging Face](https://huggingface.co). Model path settings are now managed in `.env`; future versions will add a GUI for configuration.
 
 ```bash
 python src/main.py
@@ -112,7 +108,10 @@ Input Validation (entity ID sanitization, file extension whitelist)
 
 ```
 project-velmira/
+├── .env
 ├── .gitignore
+├── .dockerignore
+├── Dockerfile
 ├── LICENSE
 ├── README.md
 ├── DEVLOG.md

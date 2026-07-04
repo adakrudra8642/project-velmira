@@ -1,6 +1,13 @@
-# Paths (edit these)
-MAIN_MODEL = "your_model.gguf"
-EMBED_MODEL = "your_model.gguf"
+import os
+
+from dotenv import load_dotenv
+
+# Load the .env file
+load_dotenv()
+
+# Paths for models and data
+EMBED_MODEL = os.getenv("MODEL_EMBED", "")
+MAIN_MODEL = os.getenv("MODEL_MAIN", "")
 DB_PATH = "data/memory"
 LOG_PATH = "data/vel.log"
 

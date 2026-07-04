@@ -1,5 +1,18 @@
 ## Development Log
 
+**V1.1.2** — README / Docker updates
+- Updated README references for Docker and clarified build/run instructions.
+- Cleaned up devlog entry to reflect latest environment setup.
+
+**V1.1.1**
+- Added basic Docker support for local development.
+- Created a `Dockerfile` to containerize the app with a minimal Python runtime.
+
+**V1.0.1** — Code Beautification & Polish
+- Refactored codebase for improved readability and consistency.
+- Cleaned up loose bits and pieces.
+- Standardized code formatting and naming conventions.
+
 **Genesis note:** This project was restarted from scratch on 07‑Jun‑2026 after a local Git history corruption. All current code is stable and represents the **V1.0.0** release. No functionality was lost – the reset only cleaned up internal version control.
 
 **V1.0.0** — Official Public Release ^_^

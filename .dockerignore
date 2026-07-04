@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Environment
+venv/
+.venv/
+env/
+
+# Models (large for git)
+models/
+*.gguf
+*.bin
+
+# Data
+data/
+*.log
+
+# IDE
+.vscode/
+.code-workspace
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.tmp
+tree.txt
+
+# Build
+dist/
+build/
+*.egg-info/
