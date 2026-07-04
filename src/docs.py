@@ -10,15 +10,18 @@ import core
 log = logging.getLogger(__name__)
 converter = DocumentConverter()
 
+
 def chunk_text(text, size=500, overlap=50):
+    """Split text into overlapping chunks by word count."""
     words = text.split()
     chunks = []
     idx = 0
     while idx < len(words):
-        chunk = " ".join(words[idx:idx+size])
+        chunk = " ".join(words[idx : idx + size])
         chunks.append(chunk)
         idx += size - overlap
     return [c for c in chunks if len(c) > 30]
+
 
 def read_file(path, eid, embed_model, main_model, registry, archive):
     print(f"Reading '{path}' for '{eid}'...")
