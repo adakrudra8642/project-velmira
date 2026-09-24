@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import logging
 import time
 from pathlib import Path
@@ -10,9 +11,8 @@ import core
 log = logging.getLogger(__name__)
 converter = DocumentConverter()
 
-
 def chunk_text(text, size=500, overlap=50):
-    """Split text into overlapping chunks by word count."""
+    # Split text into overlapping chunks by word count
     words = text.split()
     chunks = []
     idx = 0
@@ -22,14 +22,14 @@ def chunk_text(text, size=500, overlap=50):
         idx += size - overlap
     return [c for c in chunks if len(c) > 30]
 
-
 def read_file(path, eid, embed_model, main_model, registry, archive):
     print(f"Reading '{path}' for '{eid}'...")
     try:
         # Convert document to markdown
         content = converter.convert(path).document.export_to_markdown()
+
         # Extract facts and update registry
-        facts = auditor.audit_file(content, eid, main_model)
+        facts = auditor.extract_facts(content, eid, main_model)
         core.update_registry(registry, eid, facts)
 
         # Chunk and embed
@@ -45,6 +45,6 @@ def read_file(path, eid, embed_model, main_model, registry, archive):
             })
         archive.add(rows)
         print(f"Done. {len(chunks)} chunks stored. Facts: {facts}")
-    except Exception as e:  # noqa: BLE001
-        log.error("Failed to process '%s' for '%s': %s", path, eid, e)
-        print(f"Error processing file: {e}")
+    except (RuntimeError, ValueError, OSError) as err:
+        log.error("Failed to process '%s' for '%s': %s", path, eid, err)
+        print(f"Error processing file: {err}")

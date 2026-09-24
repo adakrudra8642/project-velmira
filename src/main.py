@@ -49,6 +49,7 @@ def main():
     embed_model, main_model, registry, archive = core.init()
     focus = "user"
     print("VEL ready. Commands: set:<name> | read:<file> | exit\n")
+
     while True:
         try:
             cmd = input(f"[{focus}] > ").strip()
@@ -68,9 +69,9 @@ def main():
                 chat.chat(cmd, focus, embed_model, main_model, registry, archive)
         except KeyboardInterrupt:
             print("\nUse 'exit' to quit.")
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as err:
             log.exception("Unhandled error")
-            print(f"Something went wrong: {e}")
+            print(f"Something went wrong: {err}")
 
 
 if __name__ == "__main__":

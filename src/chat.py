@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import logging
 import re
 
@@ -36,27 +37,26 @@ def _search_archive(query, query_vec, eid, archive):
     # Try hybrid search first
     try:
         return (
-            archive
-            .search(query_type="hybrid")
+            archive.search(query_type="hybrid")
             .vector(query_vec)
             .text(safe_query)
             .where(f"eid = '{eid}'")
             .limit(config.TOP_K)
             .to_list()
         )
-    except Exception:  # noqa: BLE001
-        log.warning("Hybrid search failed, fallback to vector only")
+    except (RuntimeError, ValueError) as err:
+        log.warning("Hybrid search failed, fallback to vector only: %s", err)
+
     # Fallback vector search
     try:
         return (
-            archive
-            .search(query_vec, query_type="vector")
+            archive.search(query_vec, query_type="vector")
             .where(f"eid = '{eid}'")
             .limit(config.TOP_K)
             .to_list()
         )
-    except Exception as e:  # noqa: BLE001
-        log.error("Vector search failed for %s: %s", eid, e)
+    except (RuntimeError, ValueError) as err:
+        log.error("Vector search failed for %s: %s", eid, err)
         return []
 
 
@@ -65,8 +65,8 @@ def chat(query, eid, embed_model, main_model, registry, archive):
     try:
         facts = registry.search().where(f"eid = '{eid}'").to_list()
         attr_str = facts[0]["attrs"] if facts else "{}"
-    except Exception:  # noqa: BLE001
-        log.warning("Registry lookup failed for %s", eid)
+    except (RuntimeError, KeyError) as err:
+        log.warning("Registry lookup failed for %s: %s", eid, err)
         attr_str = "{}"
 
     # Retrieve relevant chunks
@@ -78,8 +78,8 @@ def chat(query, eid, embed_model, main_model, registry, archive):
             if results
             else "No relevant documents found."
         )
-    except Exception as e:  # noqa: BLE001
-        log.error("Archive search failed for %s: %s", eid, e)
+    except (RuntimeError, ValueError, KeyError) as err:
+        log.error("Archive search failed for %s: %s", eid, err)
         context = "No relevant documents found."
 
     # Build conversation history
@@ -88,18 +88,19 @@ def chat(query, eid, embed_model, main_model, registry, archive):
         _format_history(history) if history else "No previous messages this session."
     )
 
-    # Prompt
-    prompt = f"""<|im_start|>system
-You are VEL aka Velmira, a helpful local AI assistant. Answer only the user's current question. Do not invent follow-up questions or continue the conversation yourself.
-
-Persistent facts about {eid}: {attr_str}
-Relevant document context: {context}
-Conversation so far:
-{history_str}<|im_end|>
-<|im_start|>user
-{query}<|im_end|>
-<|im_start|>assistant
-"""
+    # Prompt construction
+    prompt = (
+        "<|im_start|>system\n"
+        "You are VEL aka Velmira, a helpful local AI assistant. Answer only the user's current question. "
+        "Do not invent follow-up questions or continue the conversation yourself.\n\n"
+        f"Persistent facts about {eid}: {attr_str}\n"
+        f"Relevant document context: {context}\n"
+        "Conversation so far:\n"
+        f"{history_str}<|im_end|>\n"
+        "<|im_start|>user\n"
+        f"{query}<|im_end|>\n"
+        "<|im_start|>assistant\n"
+    )
 
     # Stream response
     response_parts = []
@@ -116,9 +117,9 @@ Conversation so far:
             print(token, end="", flush=True)
             response_parts.append(token)
         print()
-    except Exception as e:  # noqa: BLE001
-        log.error("Generation failed: %s", e)
-        print(f"\nGeneration failed: {e}")
+    except (RuntimeError, KeyError, IndexError) as err:
+        log.error("Generation failed: %s", err)
+        print(f"\nGeneration failed: {err}")
         return
 
     full_response = "".join(response_parts).strip()
@@ -130,8 +131,8 @@ Conversation so far:
     # Extract new facts from exchange
     try:
         exchange = f"User: {query}\nVEL: {full_response}"
-        new_facts = auditor.audit_file(exchange, eid, main_model)
+        new_facts = auditor.extract_facts(exchange, eid, main_model)
         if new_facts:
             core.update_registry(registry, eid, new_facts)
-    except Exception as e:  # noqa: BLE001
-        log.warning("Fact extraction failed: %s", e)
+    except (RuntimeError, KeyError, ValueError) as err:
+        log.warning("Fact extraction failed: %s", err)

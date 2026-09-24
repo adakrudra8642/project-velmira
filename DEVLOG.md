@@ -1,14 +1,28 @@
 ## Development Log
 
-**V1.1.2** — README / Docker updates
+**
+
+**V1.1.5** — Error Handling & Code Cleanup
+- Added exception handling for more robust failure recovery.
+- Improved formatting and added clear comments for each processing step.
+- Rechecked project files for consistency and correctness.
+- Cleaned and sanitized the codebase and related files.
+
+**V1.1.4** — Linux Migration & Core Improvements
+- Shifted development and runtime environment to Linux.
+- Implemented important code and configuration improvements.
+- Tested the application workflow and confirmed it is working as expected.
+- Docker support currently needs fixing and is not working after the migration.
+
+**V1.1.3** — README / Docker updates
 - Updated README references for Docker and clarified build/run instructions.
 - Cleaned up devlog entry to reflect latest environment setup.
 
-**V1.1.1**
+**V1.1.2**
 - Added basic Docker support for local development.
 - Created a `Dockerfile` to containerize the app with a minimal Python runtime.
 
-**V1.0.1** — Code Beautification & Polish
+**V1.1.1** — Code Beautification & Polish
 - Refactored codebase for improved readability and consistency.
 - Cleaned up loose bits and pieces.
 - Standardized code formatting and naming conventions.

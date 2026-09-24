@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import json
 import logging
 import re
@@ -7,15 +8,14 @@ log = logging.getLogger(__name__)
 NOISE_KEYS = {"greeting", "vel_response", "user_message", "message", "response", "text"}
 
 
-def _extract_json(text):
-    """Extract JSON from text with direct parse fallback to regex."""
-    # Direct parse
+def parse_json(text):
+    # Try direct JSON parsing
     try:
         return json.loads(text.strip())
     except json.JSONDecodeError:
         pass
 
-    # Fallback regex
+    # Fallback to regex extraction
     match = re.search(r"\{.*?\}", text, re.DOTALL)
     if match:
         try:
@@ -26,36 +26,43 @@ def _extract_json(text):
     return None
 
 
-def _filter_noise(facts):
-    """Filter out noise keys from facts dictionary."""
+def filter_facts(facts):
+    # Remove noise keys from facts dictionary
     return {k: v for k, v in facts.items() if k.lower() not in NOISE_KEYS}
 
 
-def audit_file(content, eid, main_model):
-    """Audit file content and extract persistent facts about entity."""
-    # Trim and build prompt
+def extract_facts(content, eid, main_model):
+    # Extract persistent facts about entity
     snippet = content[:3000]
-    prompt = f"""Extract only persistent, reusable facts about {eid} from this text.
-Good facts: personal details, project details, facts, details, etc.
-Bad facts: things said in passing, greetings, filler phrases.
-Return ONLY a flat JSON object. No explanation, no markdown.
-Text: {snippet}
-JSON:"""
+    prompt = (
+        f"Extract only persistent, reusable facts about {eid} from this text.\n"
+        "Good facts: personal details, project details, facts, details, etc.\n"
+        "Bad facts: things said in passing, greetings, filler phrases.\n"
+        "Return ONLY a flat JSON object. No explanation, no markdown.\n"
+        f"Text: {snippet}\n"
+        "JSON:"
+    )
 
-    # Retry loop
+    # Retry loop for extraction
     for attempt in range(3):
         try:
             raw = main_model(prompt, temperature=0, max_tokens=256)["choices"][0][
                 "text"
             ]
-            parsed = _extract_json(raw)
+            parsed = parse_json(raw)
             if parsed is not None:
-                clean = _filter_noise(parsed)
-                log.info("audit_file ok for %s attempt %d: %s", eid, attempt + 1, clean)
+                clean = filter_facts(parsed)
+                log.info(
+                    "Fact extraction succeeded for %s on attempt %d", eid, attempt + 1
+                )
                 return clean
-            log.warning("audit_file attempt %d no JSON for %s", attempt + 1, eid)
-        except Exception as e:  # noqa: BLE001
-            log.error("audit_file attempt %d crashed for %s: %s", attempt + 1, eid, e)
+            log.warning(
+                "Fact extraction attempt %d returned no JSON for %s", attempt + 1, eid
+            )
+        except (KeyError, IndexError, RuntimeError) as err:
+            log.error(
+                "Fact extraction attempt %d crashed for %s: %s", attempt + 1, eid, err
+            )
 
-    log.error("audit_file failed all attempts for %s", eid)
+    log.error("Fact extraction failed all attempts for %s", eid)
     return {}

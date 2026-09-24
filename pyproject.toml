@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "velmira"
-version = "1.1.2"
+version = "1.1.5"
 description = "Velmira (VEL) — a local-first RAG assistant"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -17,10 +17,6 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Application Frameworks"
 ]
 requires-python = ">=3.10"

@@ -1,17 +1,27 @@
+#!/usr/bin/env python3
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Load the .env file
-load_dotenv()
+# Load environment variables from .env
+env_path = Path(".env")
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
 
-# Paths for models and data
+# Base directories
+BASE_DIR = (Path(__file__).resolve().parent).parent
+DATA_DIR = BASE_DIR / "data"
+
+# Model paths from environment
 EMBED_MODEL = os.getenv("MODEL_EMBED", "")
 MAIN_MODEL = os.getenv("MODEL_MAIN", "")
-DB_PATH = "data/memory"
-LOG_PATH = "data/vel.log"
 
-# Embedding model settings
+# Database and log paths
+DB_PATH = DATA_DIR / "memory"
+LOG_PATH = DATA_DIR / "vel.log"
+
+# Embedding model configuration
 EMBED_CONFIG = {
     "n_ctx": 512,
     "n_batch": 512,
@@ -24,7 +34,7 @@ EMBED_CONFIG = {
     "pooling_type": 1,
 }
 
-# Main model settings
+# Main model configuration
 MAIN_CONFIG = {
     "n_ctx": 8192,
     "n_batch": 1024,
@@ -36,7 +46,7 @@ MAIN_CONFIG = {
     "logits_all": False,
 }
 
-# Search & generation
+# Search and generation parameters
 TOP_K = 5
 TEMPERATURE = 0.1
 MAX_TOKENS = 400

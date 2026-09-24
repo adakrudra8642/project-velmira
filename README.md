@@ -16,7 +16,7 @@ Better model, better responses.
 
 ---
 
-## Quick Start
+## Quick Start - Not working atm
 
 ```bash
 docker build -t velmira .
@@ -135,8 +135,6 @@ project-velmira/
 
 - [ ] Async ingestion and query pipeline
 - [ ] File generation (MD, PDF, XLSX output)
-- [ ] Velmira desktop overlay (Godot 4 + always-on-top character)
-- [ ] RPG-style chat bubbles
 - [ ] File search and OS-level interaction
 - [ ] TTS voice output
 - [ ] Role-based entity access model (multi-user)

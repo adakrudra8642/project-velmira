@@ -8,7 +8,7 @@ venv/
 .venv/
 env/
 
-# Models (large for git)
+# Models
 models/
 *.gguf
 *.bin
