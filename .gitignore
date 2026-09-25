@@ -52,3 +52,6 @@ desktop.ini
 *.tmp
 *.bak
 tree.txt
+
+# Docker
+.vel-built
