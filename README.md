@@ -1,6 +1,6 @@
 # VELMIRA (VEL)
 
-> A privacy-first local RAG assistant that keeps your data on your machine, always.
+> A local-first personal AI that turns any compatible model into a private document-aware tool for your data.
 
 ---
 
@@ -16,22 +16,22 @@ Better model, better responses.
 
 ---
 
-## Quick Start - Not working atm
-
-```bash
-docker build -t velmira .
-docker run --rm -it -v "%CD%/models:/app/models" -v "%CD%/data:/app/data" velmira
-```
+## Quick Start
 
 Download two GGUF models and place them in the `models/` folder (create it if it doesn't exist):
 
 | Role | Type | Size | Quantization |
 |------|------------|------|--------------|
-| Main LLM | `gguf` | `4B` | `Q4_K_M` |
-| Embeddings | `gguf` | `0.6B` | `q8_0` |
+| Main model | `gguf` | `4B` | `Q4_K_M` |
+| Embedding model | `gguf` | `0.6B` | `q8_0` |
 
 Both available on [Hugging Face](https://huggingface.co). Model path settings are now managed in `.env`; future versions will add a GUI for configuration.
 
+```bash
+chmod +x run.sh
+./run.sh
+```
+or
 ```bash
 python src/main.py
 ```
@@ -53,13 +53,13 @@ Entity IDs: letters, numbers, _ and - only. Max 64 chars.
 **Example session:**
 
 ```
-[user] > set:alice
-[alice] > read:research_paper.pdf
-    Reading research_paper.pdf for alice...
-    Done. Facts found: {"name": "Alice Chen", "role": "researcher", "institution": "MIT"}
-[alice] > What methodology did they use?
+[user] > set:rudra
+[rudra] > read:research_paper.pdf
+    Reading research_paper.pdf for rudra...
+    Done. Facts found: {"name": "Rudra Adak", "role": "student", "institution": "XYZ"}
+[rudra] > What methodology did they use?
     VEL: The paper uses a mixed-methods approach combining...
-[alice] > exit
+[rudra] > exit
 ```
 
 ---
@@ -84,7 +84,7 @@ Input Validation (entity ID sanitization, file extension whitelist)
 **Key design decisions:**
 
 - **Two separate model configs** — embedding model uses `pooling_type=1`, generation model does not. Sharing config caused silent misbehavior in earlier versions.
-- **Hybrid search** — vector similarity + full-text search combined. FTS failure degrades gracefully to vector-only.
+- **Hybrid search** — vector similarity + full-text search combined. FTS failure degrades to vector-only.
 - **Append-only registry** — entity facts are merged, never overwritten blind. Conflict detection is logged.
 - **Input sanitization** — entity IDs validated by regex before hitting any DB query. File paths checked against extension whitelist.
 
@@ -108,25 +108,34 @@ Input Validation (entity ID sanitization, file extension whitelist)
 
 ```
 project-velmira/
-├── .env
-├── .gitignore
-├── .dockerignore
-├── Dockerfile
-├── LICENSE
-├── README.md
-├── DEVLOG.md
-├── pyproject.toml
-├── requirements.txt
 ├── src/
 │   ├── __init__.py
-│   ├── main.py                 — Entry point, main loop
-│   ├── core.py                 — Model init, DB, embed()
-│   ├── chat.py                 — RAG query + streaming
-│   ├── docs.py                 — Ingestion + chunking
-│   ├── auditor.py              — Fact extraction
-│   └── config.py               — Paths, model settings
-├── models/                     — GGUF files (not tracked)
-└── data/                       — LanceDB + logs (not tracked)
+│   ├── main.py          # Entry point, command loop
+│   ├── core.py          # Model init, LanceDB, embed()
+│   ├── chat.py          # RAG query + streaming + history
+│   ├── docs.py          # Ingestion, chunking, Docling
+│   ├── auditor.py       # Fact extraction
+│   └── config.py        # Paths, model settings
+├── models/              # GGUF files (not tracked)
+│   ├── Main model
+│   └── Embed model
+├── data/                # Runtime data (not tracked)
+│   ├── memory/
+│   │   ├── archive.lance/
+│   │   └── registry.lance/
+│   └── vel.log
+├── .dockerignore
+├── .env
+├── .gitignore
+├── .vel-built           # Generates after run (not tracked)
+├── compose.yml
+├── DEVLOG.md
+├── Dockerfile
+├── LICENCE
+├── pyproject.toml
+├── README.md
+├── requirements.txt
+└── run.sh               # Can run manually
 ```
 
 ---

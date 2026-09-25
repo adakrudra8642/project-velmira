@@ -1,6 +1,21 @@
 ## Development Log
 
-**
+*
+
+**V1.2.3** — Simplified Application Startup
+- Added an `run.sh` script so the program can be launched by running a single script.
+- Updated the README quick-start section with the new run instructions.
+
+**V1.2.2** — Lightweight Development & Container Cleanup
+- Made project edits visible immediately during development.
+- Replaced heavier components with lightweight, bare-bones alternatives suited for CPU-only operation.
+- Reduced startup time for faster iteration.
+- Refined cleanup and retention rules to keep the container image clean and minimal.
+
+**V1.2.1** — Docker Setup
+- Added a basic `Dockerfile` for containerized development.
+- Added `compose.yml` for running the application with Docker Compose.
+- Added `.dockerignore` to exclude unnecessary files from the build context.
 
 **V1.1.5** — Error Handling & Code Cleanup
 - Added exception handling for more robust failure recovery.

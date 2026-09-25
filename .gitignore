@@ -2,36 +2,53 @@
 __pycache__/
 *.py[cod]
 *.so
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Environment
+# Virtual environments
 venv/
 .venv/
 env/
+ENV/
+
+# Environment variables
+.env
+.env.*
+!.env.example
 
 # Models
 models/
 *.gguf
 *.bin
+*.safetensors
 
-# Data
+# Data and logs
 data/
 *.log
+*.sqlite
+*.db
 
-# IDE
+# IDE and editors
 .vscode/
-.code-workspace
 .idea/
 *.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Temp
+# Temp and misc
 *.tmp
+*.bak
 tree.txt
-
-# Build
-dist/
-build/
-*.egg-info/

@@ -1,0 +1,19 @@
+services:
+  vel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vel:latest
+    container_name: vel
+    stdin_open: true
+    tty: true
+    volumes:
+      # Live code: edits on host show up instantly in container
+      - ./src:/app/src
+      # Persistent data and models
+      - ./data:/app/data:z
+      - ./models:/app/models:z
+      # Env file
+      - ./.env:/app/.env
+    env_file:
+      - .env
